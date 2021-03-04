@@ -37,7 +37,7 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
 # col 4 = battery
 # col 5-8 = HOBO notes
 ​
-View(LJWB_HOBO_list[[1]])
+View(LJWB_HOBO_list[[1]]) #need to fix am/pm and split for ALL files
 View(LJWB_HOBO_list[[2]]) 
 View(LJWB_HOBO_list[[3]])
 View(LJWB_HOBO_list[[4]])
@@ -73,6 +73,20 @@ View(LJWB_HOBO_list[[30]])
 # These look like they are structured the same. 
 # If they are not structured the same, you'll want to edit the offending dataframes. Let me know if you run into this. 
 
+##12 hr time for all lists
+for(i in 1:length(LJWB_HOBO_list)){
+ LJWB_HOBO_list[[i]]$dummy <- LJWB_HOBO_list[[i]][,1]
+   LJWB_HOBO_list[[i]][,1] <- format(strptime(LJWB_HOBO_list[[i]][,1], format="%m/%d/%y %I:%M:%S %p"), format="%m/%d/%y %H:%M:%S")
+  
+
+  LJWB_HOBO_list[[i]]$time <- format(strptime(LJWB_HOBO_list[[i]]$dummy, format="%m/%d/%y %I:%M:%S %p"), format="%H:%M:%S")
+  
+  LJWB_HOBO_list[[i]][,1] <- as.Date(LJWB_HOBO_list[[i]][,1], format="%m/%d/%y")
+  
+  LJWB_HOBO_list[[i]] <- LJWB_HOBO_list[[i]] %>% relocate(time, .after=1)
+  }
+
+
 # once I'm sure they're all structured the same, I can do some manipulations to them while they are still in the list form. This is more efficient than manipulating them one by one
 # note that I'm making a new list when I do this so that the orininal dataframes remain unchanged and I can go back to them if I need to?strptime
 
@@ -82,7 +96,7 @@ View(LJWB_HOBO_list[[30]])
 LJWB_HOBO_list_2 = lapply(LJWB_HOBO_list, 
                           dplyr::select,
                           (contains("Date") | contains("Time") | contains("Temp")))
-​
+View(LJWB_HOBO_list_2[[30]])
 ​
 #### format date ####
 ​
@@ -93,6 +107,21 @@ for(i in 1:length(LJWB_HOBO_list_2)){
 }
 
 ​
+# Third, I will correct dates in df 27
+View(LJWB_HOBO_list_2[[27]])
+range(LJWB_HOBO_list_2[[27]]$date)
+# notice that the dates in this dataframe are in 2037
+# To correct, we have to assume that the starting date in the file name "2012-08-27" is the correct starting date, and that dates are sequential. We also have to assume that the time stamps are correct. It'd be nice to check this assumption with someone, but the person who collected data in 2012 is no longer around. 
+# I will correct it here, but note this issue and if the diel or seasonal patterns look wrong later on, our assumptions may be incorrect and we should remove these data. 
+​
+# calculate correction (# of days difference)
+diff_date = as.Date("2037-01-24") - as.Date("2012-08-27")
+​
+# apply correction
+LJWB_HOBO_list_2[[27]]$date = LJWB_HOBO_list_2[[27]]$date - diff_date
+
+# check new range
+range(LJWB_HOBO_list_2[[27]]$date)
 
 #### format time and correct time zones ####
 ​
@@ -108,11 +137,13 @@ for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$tz_flag = ifelse(LJWB_HOBO_list_2[[i]]$dst=="FALSE" &
                                            LJWB_HOBO_list_2[[i]]$tz=="GMT.06.00", "check tz!", "OK")
 }
+
 # this returns the sum of rows with incorrect time zones. If there is anything but zero in here, there is an issue with time zones that needs to be corrected before proceeding!!
 for(i in 1:length(LJWB_HOBO_list_2)){
   z = length(LJWB_HOBO_list_2[[i]]$tz_flag[LJWB_HOBO_list_2[[i]]$tz_flag=="check tz!"])
   print(z)
 }
+View(LJWB_HOBO_list_2[[28]])
 # there are 3 dataframes with incorrect time zones. Here, I add a column to label the appropriate time zone for each observation
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$tz_corrected = ifelse(LJWB_HOBO_list_2[[i]]$tz_flag=="OK",LJWB_HOBO_list_2[[i]]$tz,"GMT.07.00")
@@ -145,6 +176,22 @@ summary(LJWB_HOBO_list_2[[14]]$datetime_NM)
 summary(LJWB_HOBO_list_2[[15]]$datetime_NM)
 summary(LJWB_HOBO_list_2[[16]]$datetime_NM)
 summary(LJWB_HOBO_list_2[[17]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[18]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[19]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[20]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[21]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[22]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[23]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[24]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[25]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[26]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[27]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[28]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[29]]$datetime_NM)
+summary(LJWB_HOBO_list_2[[30]]$datetime_NM)
+
+
+
 # note that accounting for time zones when the HOBOs weren't calibrated for changing time zones causes doubling of dates on the fall-side of daylight savings, and NA dates on the spring-side. We will correct for this by removing NA dates and averaging duplicates once we have one dataframe
 ​
 #### combine dataframes to one ####
