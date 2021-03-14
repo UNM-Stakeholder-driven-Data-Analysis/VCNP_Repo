@@ -8,6 +8,7 @@
 library(lubridate)
 library(tidyverse)
 library(tsibble)
+library(dplyr)
 ​
 #### load data ####
 ​
@@ -56,15 +57,33 @@ View(LJWB_HOBO_list[[17]])
 ​
 # These look like they are structured the same. 
 # If they are not structured the same, you'll want to edit the offending dataframes. Let me know if you run into this. 
-​
+#LJWB_HOBO_list[[17]]=
+#LJWB_HOBO_list[[17]]%>% tidyr::separate("Date.Time..GMT.06.00", into = c("Date", "Time"),
+                            #sep=" ", remove=TRUE, extra= "merge"
+                                # ) 
+##also need to format 12 hr time for list 17
+LJWB_HOBO_list[[17]]$Date.Time..GMT.06.00.1 <- format(strptime(LJWB_HOBO_list[[17]]$Date.Time..GMT.06.00, format="%m/%d/%y %I:%M:%S %p"), format="%H:%M:%S")
+LJWB_HOBO_list[[17]]$Date.Time..GMT.06.00 <- as.Date(LJWB_HOBO_list[[17]]$Date.Time..GMT.06.00, format="%m/%d/%y")
+
+LJWB_HOBO_list[[17]] <- LJWB_HOBO_list[[17]] %>% relocate(Date.Time..GMT.06.00.1, .after=Date.Time..GMT.06.00)
+
+
 # once I'm sure they're all structured the same, I can do some manipulations to them while they are still in the list form. This is more efficient than manipulating them one by one
-# note that I'm making a new list when I do this so that the orininal dataframes remain unchanged and I can go back to them if I need to
-​
+# note that I'm making a new list when I do this so that the orininal dataframes remain unchanged and I can go back to them if I need to?strptime
+
+
 # First, I select only the columns that I'm interested in. 
 # this first function selects only columns with "Date", "Time", or "Temp" in the column name
 LJWB_HOBO_list_2 = lapply(LJWB_HOBO_list, 
                           dplyr::select,
                           (contains("Date") | contains("Time") | contains("Temp")))
+View(LJWB_HOBO_list_2[[15]])
+View(LJWB_HOBO_list_2[[17]])
+
+#
+
+#tibble(x=LJWB_HOBO_list_2) %>% unnest(x)
+#str(LJWB_HOBO_list_2)
 ​
 ​
 #### format date ####
@@ -74,10 +93,13 @@ LJWB_HOBO_list_2 = lapply(LJWB_HOBO_list,
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$date =  as.Date(LJWB_HOBO_list_2[[i]][,1], format = "%m/%d/%Y")
 }
+
+
+
 ​
 # Third, I will correct dates in La_Jara_West_2012-07-26_to_2012-11-19_1280511.csv, df 2 in the list
 View(LJWB_HOBO_list_2[[2]])
-range(LJWB_HOBO_list_2[[2]]$Date)
+range(LJWB_HOBO_list_2[[2]]$date)
 # notice that the dates in this dataframe are in 1937, starting on Jan 11. This doesn't make any sense.
 # To correct, we have to assume that the starting date in the file name "2012-07-26" is the correct starting date, and that dates are sequential. We also have to assume that the time stamps are correct. It'd be nice to check this assumption with someone, but the person who collected data in 2012 is no longer around. 
 # I will correct it here, but note this issue and if the diel or seasonal patterns look wrong later on, our assumptions may be incorrect and we should remove these data. 
@@ -110,7 +132,7 @@ for(i in 1:length(LJWB_HOBO_list_2)){
   z = length(LJWB_HOBO_list_2[[i]]$tz_flag[LJWB_HOBO_list_2[[i]]$tz_flag=="check tz!"])
   print(z)
 }
-# there are 3 dataframes with incorrect time zones. Here, I add a column to label the appropriate time zone for each observation
+# there are 6 dataframes with incorrect time zones. Here, I add a column to label the appropriate time zone for each observation
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$tz_corrected = ifelse(LJWB_HOBO_list_2[[i]]$tz_flag=="OK",LJWB_HOBO_list_2[[i]]$tz,"GMT.07.00")
 }
