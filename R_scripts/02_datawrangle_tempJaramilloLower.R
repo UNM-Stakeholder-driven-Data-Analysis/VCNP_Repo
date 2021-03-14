@@ -123,6 +123,13 @@ LJWB_HOBO_list_2[[27]]$date = LJWB_HOBO_list_2[[27]]$date - diff_date
 # check new range
 range(LJWB_HOBO_list_2[[27]]$date)
 
+#repeat above for data set 25
+View(LJWB_HOBO_list_2[[25]])
+range(LJWB_HOBO_list_2[[25]]$date)
+diff_date_2 = as.Date("2037-01-16") - as.Date("2012-07-31")
+LJWB_HOBO_list_2[[25]]$date = LJWB_HOBO_list_2[[25]]$date - diff_date_2
+range(LJWB_HOBO_list_2[[25]]$date)
+
 #### format time and correct time zones ####
 ​
 # note that some of the time column names say GMT.06.00 and some say GMT.07.00. This indicates that the loggers were set to different time zones at different times. If the data was recorded between March and Nov (exact date varies by year), GMT-6 is the Mountain time zone with the daylight savings time offset included. If it is not between March and Nov, it should be GMT-7. . The code below checks these time zones and corrects the times where needed. 
@@ -143,7 +150,7 @@ for(i in 1:length(LJWB_HOBO_list_2)){
   z = length(LJWB_HOBO_list_2[[i]]$tz_flag[LJWB_HOBO_list_2[[i]]$tz_flag=="check tz!"])
   print(z)
 }
-View(LJWB_HOBO_list_2[[28]])
+View(LJWB_HOBO_list_2[[27]])
 # there are 3 dataframes with incorrect time zones. Here, I add a column to label the appropriate time zone for each observation
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$tz_corrected = ifelse(LJWB_HOBO_list_2[[i]]$tz_flag=="OK",LJWB_HOBO_list_2[[i]]$tz,"GMT.07.00")
