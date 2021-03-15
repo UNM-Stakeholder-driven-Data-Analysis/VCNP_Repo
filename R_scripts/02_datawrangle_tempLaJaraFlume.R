@@ -17,7 +17,7 @@ library(dplyr)
 # this function imports all the file names for files in a specific site folder
 # change "path" argument for each site
 
-LJWB_file_list = list.files(path="C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/raw data/Valles_Flume_CSVs_Corrected/La Jara Flume/", 
+LJWB_file_list = list.files(path="C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/raw data/Valles_Flume_CSVs_Corrected/La Jara West/", 
                             recursive=F, 
                             full.names=TRUE)
 # this imports files into an R list of dataframes (review intro to R tutorial if you don't understand R lists!)
@@ -31,14 +31,14 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
 ​
 # this is to look at each dataframe and make sure they are structured the same way. 
 # all dataframes should be structured like so:
-# col 1 = date and time (am/pm)
-# col 2 = pressure
-# col 3 = temp
-# col 4 = battery
+# col 1 = date
+# col 2 = time
+# col 3 = absolute pressure
+# col 4 = temperature
 # col 5-8 = HOBO notes
 ​
 View(LJWB_HOBO_list[[1]])
-View(LJWB_HOBO_list[[2]]) 
+View(LJWB_HOBO_list[[2]]) # notice the weird dates here. I correct this in the next section!
 View(LJWB_HOBO_list[[3]])
 View(LJWB_HOBO_list[[4]])
 View(LJWB_HOBO_list[[5]])
@@ -54,14 +54,19 @@ View(LJWB_HOBO_list[[14]])
 View(LJWB_HOBO_list[[15]])
 View(LJWB_HOBO_list[[16]])
 View(LJWB_HOBO_list[[17]])
-View(LJWB_HOBO_list[[18]])
-View(LJWB_HOBO_list[[19]])
-
-
-
 ​
 # These look like they are structured the same. 
 # If they are not structured the same, you'll want to edit the offending dataframes. Let me know if you run into this. 
+#LJWB_HOBO_list[[17]]=
+#LJWB_HOBO_list[[17]]%>% tidyr::separate("Date.Time..GMT.06.00", into = c("Date", "Time"),
+#sep=" ", remove=TRUE, extra= "merge"
+# ) 
+##also need to format 12 hr time for list 17
+LJWB_HOBO_list[[17]]$Date.Time..GMT.06.00.1 <- format(strptime(LJWB_HOBO_list[[17]]$Date.Time..GMT.06.00, format="%m/%d/%y %I:%M:%S %p"), format="%H:%M:%S")
+LJWB_HOBO_list[[17]]$Date.Time..GMT.06.00 <- as.Date(LJWB_HOBO_list[[17]]$Date.Time..GMT.06.00, format="%m/%d/%y")
+
+LJWB_HOBO_list[[17]] <- LJWB_HOBO_list[[17]] %>% relocate(Date.Time..GMT.06.00.1, .after=Date.Time..GMT.06.00)
+
 
 # once I'm sure they're all structured the same, I can do some manipulations to them while they are still in the list form. This is more efficient than manipulating them one by one
 # note that I'm making a new list when I do this so that the orininal dataframes remain unchanged and I can go back to them if I need to?strptime
@@ -72,6 +77,13 @@ View(LJWB_HOBO_list[[19]])
 LJWB_HOBO_list_2 = lapply(LJWB_HOBO_list, 
                           dplyr::select,
                           (contains("Date") | contains("Time") | contains("Temp")))
+View(LJWB_HOBO_list_2[[15]])
+View(LJWB_HOBO_list_2[[17]])
+
+#
+
+#tibble(x=LJWB_HOBO_list_2) %>% unnest(x)
+#str(LJWB_HOBO_list_2)
 ​
 ​
 #### format date ####
@@ -82,7 +94,24 @@ for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$date =  as.Date(LJWB_HOBO_list_2[[i]][,1], format = "%m/%d/%Y")
 }
 
+
+
 ​
+# Third, I will correct dates in La_Jara_West_2012-07-26_to_2012-11-19_1280511.csv, df 2 in the list
+View(LJWB_HOBO_list_2[[2]])
+range(LJWB_HOBO_list_2[[2]]$date)
+# notice that the dates in this dataframe are in 1937, starting on Jan 11. This doesn't make any sense.
+# To correct, we have to assume that the starting date in the file name "2012-07-26" is the correct starting date, and that dates are sequential. We also have to assume that the time stamps are correct. It'd be nice to check this assumption with someone, but the person who collected data in 2012 is no longer around. 
+# I will correct it here, but note this issue and if the diel or seasonal patterns look wrong later on, our assumptions may be incorrect and we should remove these data. 
+​
+# calculate correction (# of days difference)
+diff_date = as.Date("2012-07-26") - as.Date("1937-01-11")
+​
+# apply correction
+LJWB_HOBO_list_2[[2]]$date = LJWB_HOBO_list_2[[2]]$date + diff_date
+
+# check new range
+range(LJWB_HOBO_list_2[[2]]$date)
 
 #### format time and correct time zones ####
 ​
@@ -103,7 +132,7 @@ for(i in 1:length(LJWB_HOBO_list_2)){
   z = length(LJWB_HOBO_list_2[[i]]$tz_flag[LJWB_HOBO_list_2[[i]]$tz_flag=="check tz!"])
   print(z)
 }
-# there are 3 dataframes with incorrect time zones. Here, I add a column to label the appropriate time zone for each observation
+# there are 6 dataframes with incorrect time zones. Here, I add a column to label the appropriate time zone for each observation
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$tz_corrected = ifelse(LJWB_HOBO_list_2[[i]]$tz_flag=="OK",LJWB_HOBO_list_2[[i]]$tz,"GMT.07.00")
 }
