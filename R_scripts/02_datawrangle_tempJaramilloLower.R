@@ -61,9 +61,9 @@ View(LJWB_HOBO_list[[21]])
 View(LJWB_HOBO_list[[22]])
 View(LJWB_HOBO_list[[23]])
 View(LJWB_HOBO_list[[24]])
-View(LJWB_HOBO_list[[25]])
+View(LJWB_HOBO_list[[25]]) #fix year 2037
 View(LJWB_HOBO_list[[26]])
-View(LJWB_HOBO_list[[27]])
+View(LJWB_HOBO_list[[27]])#fix year 2037
 View(LJWB_HOBO_list[[28]])
 View(LJWB_HOBO_list[[29]])
 View(LJWB_HOBO_list[[30]])
@@ -107,28 +107,30 @@ for(i in 1:length(LJWB_HOBO_list_2)){
 }
 
 ​
-# Third, I will correct dates in df 27
-View(LJWB_HOBO_list_2[[27]])
-range(LJWB_HOBO_list_2[[27]]$date)
+# Third, I will correct dates in df 25
+View(LJWB_HOBO_list_2[[25]])
+range(LJWB_HOBO_list_2[[25]]$date)
 # notice that the dates in this dataframe are in 2037
-# To correct, we have to assume that the starting date in the file name "2012-08-27" is the correct starting date, and that dates are sequential. We also have to assume that the time stamps are correct. It'd be nice to check this assumption with someone, but the person who collected data in 2012 is no longer around. 
+# To correct, we have to assume that the starting date in the file name "2012-07-31" is the correct starting date, and that dates are sequential. We also have to assume that the time stamps are correct. It'd be nice to check this assumption with someone, but the person who collected data in 2012 is no longer around. 
 # I will correct it here, but note this issue and if the diel or seasonal patterns look wrong later on, our assumptions may be incorrect and we should remove these data. 
 ​
 # calculate correction (# of days difference)
-diff_date = as.Date("2037-01-24") - as.Date("2012-08-27")
+diff_date = as.Date("2037-01-16") - as.Date("2012-07-31")
 ​
 # apply correction
+LJWB_HOBO_list_2[[25]]$date = LJWB_HOBO_list_2[[25]]$date - diff_date
+
+# check new range
+range(LJWB_HOBO_list_2[[25]]$date)
+
+# Now do the same for 27
+View(LJWB_HOBO_list_2[[27]])
+range(LJWB_HOBO_list_2[[27]]$date)
+diff_date = as.Date("2037-01-24") - as.Date("2012-08-27")
 LJWB_HOBO_list_2[[27]]$date = LJWB_HOBO_list_2[[27]]$date - diff_date
 
 # check new range
 range(LJWB_HOBO_list_2[[27]]$date)
-
-#repeat above for data set 25
-View(LJWB_HOBO_list_2[[25]])
-range(LJWB_HOBO_list_2[[25]]$date)
-diff_date_2 = as.Date("2037-01-16") - as.Date("2012-07-31")
-LJWB_HOBO_list_2[[25]]$date = LJWB_HOBO_list_2[[25]]$date - diff_date_2
-range(LJWB_HOBO_list_2[[25]]$date)
 
 #### format time and correct time zones ####
 ​
@@ -150,7 +152,7 @@ for(i in 1:length(LJWB_HOBO_list_2)){
   z = length(LJWB_HOBO_list_2[[i]]$tz_flag[LJWB_HOBO_list_2[[i]]$tz_flag=="check tz!"])
   print(z)
 }
-View(LJWB_HOBO_list_2[[27]])
+View(LJWB_HOBO_list_2[[1]])
 # there are 3 dataframes with incorrect time zones. Here, I add a column to label the appropriate time zone for each observation
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$tz_corrected = ifelse(LJWB_HOBO_list_2[[i]]$tz_flag=="OK",LJWB_HOBO_list_2[[i]]$tz,"GMT.07.00")
