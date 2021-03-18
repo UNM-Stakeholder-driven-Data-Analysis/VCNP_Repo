@@ -15,7 +15,7 @@ library(dplyr)
 # this function imports all the file names for files in a specific site folder
 # change "path" argument for each site
 
-LJWB_file_list = list.files(path="C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/raw data/Valles_Flume_CSVs_Corrected/WFDCG/East Fork Jemez Hidden Valley/", 
+LJWB_file_list = list.files(path="C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/raw data/Valles_Flume_CSVs_Corrected/WFDCG/Rio San Antonio West/", 
                             recursive=F, 
                             full.names=TRUE)
 # this imports files into an R list of dataframes (review intro to R tutorial if you don't understand R lists!)
@@ -35,7 +35,7 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
 # col 4 = battery
 # col 5-8 = HOBO notes
 ​
-View(LJWB_HOBO_list[[1]]) #need to split date and time list 1-51, 54-55
+View(LJWB_HOBO_list[[1]]) #need to split date and time list 1-58, 62-63
 View(LJWB_HOBO_list[[2]]) 
 View(LJWB_HOBO_list[[3]]) 
 View(LJWB_HOBO_list[[4]])
@@ -61,8 +61,8 @@ View(LJWB_HOBO_list[[23]])
 View(LJWB_HOBO_list[[24]]) 
 View(LJWB_HOBO_list[[25]]) 
 View(LJWB_HOBO_list[[26]]) 
-View(LJWB_HOBO_list[[27]]) 
-View(LJWB_HOBO_list[[28]]) #need to change date from 1/24/2037 to 8/8/2012
+View(LJWB_HOBO_list[[27]]) #need to change date from 1/10/2037 to 7/25/2012
+View(LJWB_HOBO_list[[28]]) 
 View(LJWB_HOBO_list[[29]]) 
 View(LJWB_HOBO_list[[30]]) 
 View(LJWB_HOBO_list[[31]]) 
@@ -92,12 +92,20 @@ View(LJWB_HOBO_list[[54]])
 View(LJWB_HOBO_list[[55]]) 
 View(LJWB_HOBO_list[[56]]) 
 View(LJWB_HOBO_list[[57]])
-
+View(LJWB_HOBO_list[[58]])
+View(LJWB_HOBO_list[[59]])
+View(LJWB_HOBO_list[[60]])
+View(LJWB_HOBO_list[[61]])
+View(LJWB_HOBO_list[[62]])
+View(LJWB_HOBO_list[[63]])
+View(LJWB_HOBO_list[[64]])
+View(LJWB_HOBO_list[[65]])
+View(LJWB_HOBO_list[[66]])
 
 ​
 # These look like they are structured the same. Except list 1 and 2 need first two columns split
 
-for(i in c(1:51, 54:55)){
+for(i in c(1:58, 62:63)){
   LJWB_HOBO_list[[i]]$dummy <- LJWB_HOBO_list[[i]][,1]
   LJWB_HOBO_list[[i]][,1] <- format(strptime(LJWB_HOBO_list[[i]][,1], format="%m/%d/%y %I:%M:%S %p"), format="%m/%d/%y %H:%M:%S")
   
@@ -121,19 +129,19 @@ View(LJWB_HOBO_list_2[[3]])
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$date =  as.Date(LJWB_HOBO_list_2[[i]][,1], format = "%m/%d/%Y")
 }
-# I will correct dates in df 23
-View(LJWB_HOBO_list_2[[28]])
-range(LJWB_HOBO_list_2[[28]]$date)
-# notice that the dates in this dataframe are in 1937
-# To correct, we have to assume that the starting date in the file name "2012-07-31" is the correct starting date, and that dates are sequential. We also have to assume that the time stamps are correct. It'd be nice to check this assumption with someone, but the person who collected data in 2012 is no longer around. 
+# I will correct dates in df 27
+View(LJWB_HOBO_list_2[[27]])
+range(LJWB_HOBO_list_2[[27]]$date)
+# notice that the dates in this dataframe are in 2037
+# To correct, we have to assume that the starting date in the file name "2012-07-25" is the correct starting date, and that dates are sequential. We also have to assume that the time stamps are correct. It'd be nice to check this assumption with someone, but the person who collected data in 2012 is no longer around. 
 # I will correct it here, but note this issue and if the diel or seasonal patterns look wrong later on, our assumptions may be incorrect and we should remove these data. 
 
 # calculate correction (# of days difference)
-diff_date = as.Date("2037-01-24") - as.Date("2012-08-08")
+diff_date = as.Date("2037-01-10") - as.Date("2012-07-25")
 # apply correction
-LJWB_HOBO_list_2[[28]]$date = LJWB_HOBO_list_2[[28]]$date - diff_date
+LJWB_HOBO_list_2[[27]]$date = LJWB_HOBO_list_2[[27]]$date - diff_date
 # check new range
-range(LJWB_HOBO_list_2[[28]]$date)
+range(LJWB_HOBO_list_2[[27]]$date)
 
 
 #### format time and correct time zones ####

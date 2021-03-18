@@ -2,20 +2,20 @@
 # the purpose of this script is to import and clean temperature records from HOBO sensors.
 
 #### load libraries ####
-​
+
 library(lubridate)
 library(tidyverse)
 library(tsibble)
 library(dplyr)
-​
+
 #### load data ####
-​
+
 # import all data from a site folder
-​
+
 # this function imports all the file names for files in a specific site folder
 # change "path" argument for each site
 
-LJWB_file_list = list.files(path="C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/raw data/Valles_Flume_CSVs_Corrected/WFDCG/East Fork Jemez Hidden Valley/", 
+LJWB_file_list = list.files(path="C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/raw data/Valles_Flume_CSVs_Corrected/WFDCG/Jaramillo abv East Fork Jemez/", 
                             recursive=F, 
                             full.names=TRUE)
 # this imports files into an R list of dataframes (review intro to R tutorial if you don't understand R lists!)
@@ -24,9 +24,9 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
                         stringsAsFactors=F, 
                         header=T, 
                         skip=1, row.names=1)
-​
+
 #### examine data ####
-​
+
 # this is to look at each dataframe and make sure they are structured the same way. 
 # all dataframes should be structured like so:
 # col 1 = date and time (am/pm)
@@ -34,12 +34,12 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
 # col 3 = temp
 # col 4 = battery
 # col 5-8 = HOBO notes
-​
-View(LJWB_HOBO_list[[1]]) #need to split date and time list 1-51, 54-55
+
+View(LJWB_HOBO_list[[1]]) 
 View(LJWB_HOBO_list[[2]]) 
 View(LJWB_HOBO_list[[3]]) 
-View(LJWB_HOBO_list[[4]])
-View(LJWB_HOBO_list[[5]])
+View(LJWB_HOBO_list[[4]])#need to split date and time list 4-13
+View(LJWB_HOBO_list[[5]]) 
 View(LJWB_HOBO_list[[6]])
 View(LJWB_HOBO_list[[7]])
 View(LJWB_HOBO_list[[8]])
@@ -48,56 +48,12 @@ View(LJWB_HOBO_list[[10]])
 View(LJWB_HOBO_list[[11]])
 View(LJWB_HOBO_list[[12]])
 View(LJWB_HOBO_list[[13]])
-View(LJWB_HOBO_list[[14]])
-View(LJWB_HOBO_list[[15]])
-View(LJWB_HOBO_list[[16]])
-View(LJWB_HOBO_list[[17]])
-View(LJWB_HOBO_list[[18]])
-View(LJWB_HOBO_list[[19]])
-View(LJWB_HOBO_list[[20]])
-View(LJWB_HOBO_list[[21]])
-View(LJWB_HOBO_list[[22]])
-View(LJWB_HOBO_list[[23]]) 
-View(LJWB_HOBO_list[[24]]) 
-View(LJWB_HOBO_list[[25]]) 
-View(LJWB_HOBO_list[[26]]) 
-View(LJWB_HOBO_list[[27]]) 
-View(LJWB_HOBO_list[[28]]) #need to change date from 1/24/2037 to 8/8/2012
-View(LJWB_HOBO_list[[29]]) 
-View(LJWB_HOBO_list[[30]]) 
-View(LJWB_HOBO_list[[31]]) 
-View(LJWB_HOBO_list[[32]]) 
-View(LJWB_HOBO_list[[33]]) 
-View(LJWB_HOBO_list[[34]]) 
-View(LJWB_HOBO_list[[35]]) 
-View(LJWB_HOBO_list[[36]]) 
-View(LJWB_HOBO_list[[37]]) 
-View(LJWB_HOBO_list[[38]]) 
-View(LJWB_HOBO_list[[39]]) 
-View(LJWB_HOBO_list[[40]]) 
-View(LJWB_HOBO_list[[41]]) 
-View(LJWB_HOBO_list[[42]]) 
-View(LJWB_HOBO_list[[43]]) 
-View(LJWB_HOBO_list[[44]]) 
-View(LJWB_HOBO_list[[45]]) 
-View(LJWB_HOBO_list[[46]]) 
-View(LJWB_HOBO_list[[47]])
-View(LJWB_HOBO_list[[48]]) 
-View(LJWB_HOBO_list[[49]]) 
-View(LJWB_HOBO_list[[50]]) 
-View(LJWB_HOBO_list[[51]]) 
-View(LJWB_HOBO_list[[52]]) 
-View(LJWB_HOBO_list[[53]])
-View(LJWB_HOBO_list[[54]]) 
-View(LJWB_HOBO_list[[55]]) 
-View(LJWB_HOBO_list[[56]]) 
-View(LJWB_HOBO_list[[57]])
 
 
-​
+
 # These look like they are structured the same. Except list 1 and 2 need first two columns split
 
-for(i in c(1:51, 54:55)){
+for(i in c(4:13)){
   LJWB_HOBO_list[[i]]$dummy <- LJWB_HOBO_list[[i]][,1]
   LJWB_HOBO_list[[i]][,1] <- format(strptime(LJWB_HOBO_list[[i]][,1], format="%m/%d/%y %I:%M:%S %p"), format="%m/%d/%y %H:%M:%S")
   
@@ -121,19 +77,7 @@ View(LJWB_HOBO_list_2[[3]])
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$date =  as.Date(LJWB_HOBO_list_2[[i]][,1], format = "%m/%d/%Y")
 }
-# I will correct dates in df 23
-View(LJWB_HOBO_list_2[[28]])
-range(LJWB_HOBO_list_2[[28]]$date)
-# notice that the dates in this dataframe are in 1937
-# To correct, we have to assume that the starting date in the file name "2012-07-31" is the correct starting date, and that dates are sequential. We also have to assume that the time stamps are correct. It'd be nice to check this assumption with someone, but the person who collected data in 2012 is no longer around. 
-# I will correct it here, but note this issue and if the diel or seasonal patterns look wrong later on, our assumptions may be incorrect and we should remove these data. 
 
-# calculate correction (# of days difference)
-diff_date = as.Date("2037-01-24") - as.Date("2012-08-08")
-# apply correction
-LJWB_HOBO_list_2[[28]]$date = LJWB_HOBO_list_2[[28]]$date - diff_date
-# check new range
-range(LJWB_HOBO_list_2[[28]]$date)
 
 
 #### format time and correct time zones ####
@@ -184,41 +128,6 @@ summary(LJWB_HOBO_list_2[[10]]$datetime_NM)
 summary(LJWB_HOBO_list_2[[11]]$datetime_NM)
 summary(LJWB_HOBO_list_2[[12]]$datetime_NM)
 summary(LJWB_HOBO_list_2[[13]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[14]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[15]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[16]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[17]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[18]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[19]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[20]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[21]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[22]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[23]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[24]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[25]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[26]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[27]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[28]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[29]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[30]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[31]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[32]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[33]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[34]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[35]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[36]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[37]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[38]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[39]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[40]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[41]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[42]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[43]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[44]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[45]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[46]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[47]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[48]]$datetime_NM)
 
 # note that accounting for time zones when the HOBOs weren't calibrated for changing time zones causes doubling of dates on the fall-side of daylight savings, and NA dates on the spring-side. We will correct for this by removing NA dates and averaging duplicates once we have one dataframe
 ​
