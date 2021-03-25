@@ -1,19 +1,14 @@
 #### read me ####
 # the purpose of this script is to import and clean temperature records from HOBO sensors.
-​
-# this code is an example for one site, for which all HOBO data is in a folder called "La Jara West". In GIS data, this location is called the "LaJara West Branch" and is labeled as a VCNP flume. I am abbreviating this site name to LJWB throughout.
-​
+
 #### load libraries ####
-​
 library(lubridate)
 library(tidyverse)
 library(tsibble)
 library(dplyr)
-​
+
 #### load data ####
-​
 # import all data from a site folder
-​
 # this function imports all the file names for files in a specific site folder
 # change "path" argument for each site
 
@@ -26,9 +21,9 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
                         stringsAsFactors=F, 
                         header=T, 
                         skip=1, row.names=1)
-​
+
 #### examine data ####
-​
+
 # this is to look at each dataframe and make sure they are structured the same way. 
 # all dataframes should be structured like so:
 # col 1 = date and time (am/pm)
@@ -36,35 +31,34 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
 # col 3 = temp
 # col 4 = battery
 # col 5-8 = HOBO notes
-​
-View(LJWB_HOBO_list[[1]]) #need to separate date/time col
-View(LJWB_HOBO_list[[2]])  #need to separate date/time col
-View(LJWB_HOBO_list[[3]]) 
-View(LJWB_HOBO_list[[4]])
-View(LJWB_HOBO_list[[5]])
-View(LJWB_HOBO_list[[6]])
-View(LJWB_HOBO_list[[7]])
-View(LJWB_HOBO_list[[8]])
-View(LJWB_HOBO_list[[9]])
-View(LJWB_HOBO_list[[10]])
-View(LJWB_HOBO_list[[11]])
-View(LJWB_HOBO_list[[12]])
-View(LJWB_HOBO_list[[13]])
-View(LJWB_HOBO_list[[14]])
-View(LJWB_HOBO_list[[15]])
-View(LJWB_HOBO_list[[16]])
-View(LJWB_HOBO_list[[17]])
-View(LJWB_HOBO_list[[18]])
-View(LJWB_HOBO_list[[19]])
-View(LJWB_HOBO_list[[20]])
-View(LJWB_HOBO_list[[21]])
-View(LJWB_HOBO_list[[22]])
-View(LJWB_HOBO_list[[23]]) #need to change date for 1/16/1937
-View(LJWB_HOBO_list[[24]]) 
-View(LJWB_HOBO_list[[25]]) 
+
+# View(LJWB_HOBO_list[[1]]) #need to separate date/time col
+# View(LJWB_HOBO_list[[2]])  #need to separate date/time col
+# View(LJWB_HOBO_list[[3]]) 
+# View(LJWB_HOBO_list[[4]])
+# View(LJWB_HOBO_list[[5]])
+# View(LJWB_HOBO_list[[6]])
+# View(LJWB_HOBO_list[[7]])
+# View(LJWB_HOBO_list[[8]])
+# View(LJWB_HOBO_list[[9]])
+# View(LJWB_HOBO_list[[10]])
+# View(LJWB_HOBO_list[[11]])
+# View(LJWB_HOBO_list[[12]])
+# View(LJWB_HOBO_list[[13]])
+# View(LJWB_HOBO_list[[14]])
+# View(LJWB_HOBO_list[[15]])
+# View(LJWB_HOBO_list[[16]])
+# View(LJWB_HOBO_list[[17]])
+# View(LJWB_HOBO_list[[18]])
+# View(LJWB_HOBO_list[[19]])
+# View(LJWB_HOBO_list[[20]])
+# View(LJWB_HOBO_list[[21]])
+# View(LJWB_HOBO_list[[22]])
+# View(LJWB_HOBO_list[[23]]) #need to change date for 1/16/1937
+# View(LJWB_HOBO_list[[24]]) 
+# View(LJWB_HOBO_list[[25]]) 
 
 
-​
 # These look like they are structured the same. Except list 1 and 2 need first two columns split
 
 LJWB_HOBO_list[[1]]$Date.Time..GMT.06.00.1 <- format(strptime(LJWB_HOBO_list[[1]]$Date.Time..GMT.06.00, format="%m/%d/%y %I:%M:%S %p"), format="%H:%M:%S")
@@ -125,7 +119,7 @@ View(LJWB_HOBO_list_2[[1]])
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$tz_corrected = ifelse(LJWB_HOBO_list_2[[i]]$tz_flag=="OK",LJWB_HOBO_list_2[[i]]$tz,"GMT.07.00")
 }
-​
+
 # now I'm ready to format date/time and correct for the incorrect time zone
 for(i in 1:length(LJWB_HOBO_list_2)){
   LJWB_HOBO_list_2[[i]]$datetime_NM = if_else(LJWB_HOBO_list_2[[i]]$tz_flag=="OK",
@@ -133,34 +127,33 @@ for(i in 1:length(LJWB_HOBO_list_2)){
                                               LJWB_HOBO_list_2[[i]]$datetime_unk - lubridate::hours(1)
   )
 }
-​
-​
-#check ranges and appearance of NAs in date/time for each df
-summary(LJWB_HOBO_list_2[[1]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[2]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[3]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[4]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[5]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[6]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[7]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[8]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[9]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[10]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[11]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[12]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[13]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[14]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[15]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[16]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[17]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[18]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[19]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[20]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[21]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[22]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[23]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[24]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[25]]$datetime_NM)
+
+# #check ranges and appearance of NAs in date/time for each df
+# summary(LJWB_HOBO_list_2[[1]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[2]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[3]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[4]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[5]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[6]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[7]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[8]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[9]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[10]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[11]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[12]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[13]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[14]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[15]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[16]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[17]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[18]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[19]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[20]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[21]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[22]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[23]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[24]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[25]]$datetime_NM)
 
 
 # note that accounting for time zones when the HOBOs weren't calibrated for changing time zones causes doubling of dates on the fall-side of daylight savings, and NA dates on the spring-side. We will correct for this by removing NA dates and averaging duplicates once we have one dataframe
@@ -171,19 +164,18 @@ summary(LJWB_HOBO_list_2[[25]]$datetime_NM)
 LJWB_HOBO_list_3 = lapply(LJWB_HOBO_list_2, 
                           dplyr::select,
                           ( matches("datetime_NM") | contains("Temp")))
-​
+
 # rename temp column
 LJWB_HOBO_list_3 = lapply(LJWB_HOBO_list_3, setNames, nm = c("datetime_NM", "temp_C"))
-​
+
 # bind rows together
 LJWB_HOBO = do.call("rbind",LJWB_HOBO_list_3)
-​
-​
+
 #### make date/time stamps regular ####
-​
+
 # check range of date/time
 summary(LJWB_HOBO$datetime_NM)
-​
+
 # round date/times to nearest hour
 # this is necessary because data was collected on variable intervals and not always right on the 00 second interval
 LJWB_HOBO_hrly = 
@@ -191,53 +183,48 @@ LJWB_HOBO_hrly =
   mutate(datetime_NM = lubridate::round_date(datetime_NM, "1 hour")) %>%
   group_by(datetime_NM) %>%
   summarise(temp_C = mean(temp_C, na.rm = T))
-​
+
 # remove rows with no date/time
 LJWB_HOBO_hrly = LJWB_HOBO_hrly[!is.na(LJWB_HOBO_hrly$datetime_NM),]
-​
+
 # fill in date/times with missing data
 LJWB_HOBO_hrly_ts =
   LJWB_HOBO_hrly %>% 
   complete(datetime_NM = seq(min(datetime_NM, na.rm = T), max(datetime_NM, na.rm = T), by = "hour"), 
            fill = list(value = NA)) %>%
   as_tsibble(index = datetime_NM)
-​
-​
+
 #### plot time series ####
-​
-# faceted by year:
-# add year and doy
+
+# faceted by year, day, month
 LJWB_HOBO_hrly_ts$yr = lubridate::year(LJWB_HOBO_hrly_ts$datetime_NM)
 LJWB_HOBO_hrly_ts$day = lubridate::yday(LJWB_HOBO_hrly_ts$datetime_NM)
+LJWB_HOBO_hrly_ts$mo = lubridate::month(LJWB_HOBO_hrly_ts$datetime_NM)
+
+# add season (i'm estimating on season here - could be more accutate using dates)
+LJWB_HOBO_hrly_ts$season = ifelse(LJWB_HOBO_hrly_ts$mo %in% c(11,12,1,2,3) , "Winter", "Summer")
+
+#export as csv
+write.csv(LJWB_HOBO_hrly_ts, "C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/processed data/RedondoMeadowFlume_temp.csv")
+
 # plot 
 ggplot(data=LJWB_HOBO_hrly_ts, aes(x=day, y=temp_C))+
   geom_point() + geom_path()+
   facet_wrap(~yr, scales="free_y")+
   theme(legend.title = element_blank()) +
   theme_bw()
-​
+
 # across years:
 ggplot(data=LJWB_HOBO_hrly_ts, aes(x=datetime_NM, y=temp_C))+
   geom_point() + geom_path()+
   theme(legend.title = element_blank()) +
   theme_bw()
-​
+
 # across years, colored by seaspm:
-# add month
-LJWB_HOBO_hrly_ts$mo = lubridate::month(LJWB_HOBO_hrly_ts$datetime_NM)
-# add season (i'm estimating on season here - could be more accutate using dates)
-LJWB_HOBO_hrly_ts$season = ifelse(LJWB_HOBO_hrly_ts$mo %in% c(11,12,1,2,3) , "Winter", "Summer")
+
 # plot
 ggplot(data=LJWB_HOBO_hrly_ts, aes(x=datetime_NM, y=temp_C, color=season))+
   geom_point() + 
   theme(legend.title = element_blank()) +
   theme_bw()
 
-#### next steps ####
-
-# add 2020 and any other newer data to the site folder and modify the script to incorporate it into the LJWB_HOBO_hrly_ts dataframe 
-# save LJWB_HOBO_hrly_ts to a processed_data folder using write.csv
-# average data by week, month, and year. save each of these using write.csv
-# do this for the rest of the sites.
-# decide if/how the data needs cleaning. Right now I'm not sure that the negative values are innacruate, since they occur mostly in winter. However, I remember David talkign about them going wonky when they get encased in ice. So, plot this up and discuss with him. 
-# I have already processed the sonde data, so I can send that to you shortly.

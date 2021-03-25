@@ -37,36 +37,36 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
 # col 4 = battery
 # col 5-8 = HOBO notes
 ​
-View(LJWB_HOBO_list[[1]]) #need to fix am/pm and split for ALL files
-View(LJWB_HOBO_list[[2]]) 
-View(LJWB_HOBO_list[[3]])
-View(LJWB_HOBO_list[[4]])
-View(LJWB_HOBO_list[[5]])
-View(LJWB_HOBO_list[[6]])
-View(LJWB_HOBO_list[[7]])
-View(LJWB_HOBO_list[[8]])
-View(LJWB_HOBO_list[[9]])
-View(LJWB_HOBO_list[[10]])
-View(LJWB_HOBO_list[[11]])
-View(LJWB_HOBO_list[[12]])
-View(LJWB_HOBO_list[[13]])
-View(LJWB_HOBO_list[[14]])
-View(LJWB_HOBO_list[[15]])
-View(LJWB_HOBO_list[[16]])
-View(LJWB_HOBO_list[[17]])
-View(LJWB_HOBO_list[[18]])
-View(LJWB_HOBO_list[[19]])
-View(LJWB_HOBO_list[[20]])
-View(LJWB_HOBO_list[[21]])
-View(LJWB_HOBO_list[[22]])
-View(LJWB_HOBO_list[[23]])
-View(LJWB_HOBO_list[[24]])
-View(LJWB_HOBO_list[[25]]) #fix year 2037
-View(LJWB_HOBO_list[[26]])
-View(LJWB_HOBO_list[[27]])#fix year 2037
-View(LJWB_HOBO_list[[28]])
-View(LJWB_HOBO_list[[29]])
-View(LJWB_HOBO_list[[30]])
+# View(LJWB_HOBO_list[[1]]) #need to fix am/pm and split for ALL files
+# View(LJWB_HOBO_list[[2]]) 
+# View(LJWB_HOBO_list[[3]])
+# View(LJWB_HOBO_list[[4]])
+# View(LJWB_HOBO_list[[5]])
+# View(LJWB_HOBO_list[[6]])
+# View(LJWB_HOBO_list[[7]])
+# View(LJWB_HOBO_list[[8]])
+# View(LJWB_HOBO_list[[9]])
+# View(LJWB_HOBO_list[[10]])
+# View(LJWB_HOBO_list[[11]])
+# View(LJWB_HOBO_list[[12]])
+# View(LJWB_HOBO_list[[13]])
+# View(LJWB_HOBO_list[[14]])
+# View(LJWB_HOBO_list[[15]])
+# View(LJWB_HOBO_list[[16]])
+# View(LJWB_HOBO_list[[17]])
+# View(LJWB_HOBO_list[[18]])
+# View(LJWB_HOBO_list[[19]])
+# View(LJWB_HOBO_list[[20]])
+# View(LJWB_HOBO_list[[21]])
+# View(LJWB_HOBO_list[[22]])
+# View(LJWB_HOBO_list[[23]])
+# View(LJWB_HOBO_list[[24]])
+# View(LJWB_HOBO_list[[25]]) #fix year 2037
+# View(LJWB_HOBO_list[[26]])
+# View(LJWB_HOBO_list[[27]])#fix year 2037
+# View(LJWB_HOBO_list[[28]])
+# View(LJWB_HOBO_list[[29]])
+# View(LJWB_HOBO_list[[30]])
 
 
 ​
@@ -168,36 +168,36 @@ for(i in 1:length(LJWB_HOBO_list_2)){
 ​
 ​
 #check ranges and appearance of NAs in date/time for each df
-summary(LJWB_HOBO_list_2[[1]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[2]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[3]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[4]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[5]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[6]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[7]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[8]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[9]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[10]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[11]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[12]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[13]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[14]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[15]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[16]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[17]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[18]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[19]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[20]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[21]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[22]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[23]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[24]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[25]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[26]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[27]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[28]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[29]]$datetime_NM)
-summary(LJWB_HOBO_list_2[[30]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[1]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[2]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[3]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[4]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[5]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[6]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[7]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[8]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[9]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[10]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[11]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[12]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[13]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[14]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[15]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[16]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[17]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[18]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[19]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[20]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[21]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[22]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[23]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[24]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[25]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[26]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[27]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[28]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[29]]$datetime_NM)
+# summary(LJWB_HOBO_list_2[[30]]$datetime_NM)
 
 
 
@@ -247,6 +247,14 @@ LJWB_HOBO_hrly_ts =
 # add year and doy
 LJWB_HOBO_hrly_ts$yr = lubridate::year(LJWB_HOBO_hrly_ts$datetime_NM)
 LJWB_HOBO_hrly_ts$day = lubridate::yday(LJWB_HOBO_hrly_ts$datetime_NM)
+LJWB_HOBO_hrly_ts$mo = lubridate::month(LJWB_HOBO_hrly_ts$datetime_NM)
+
+# add season (i'm estimating on season here - could be more accutate using dates)
+LJWB_HOBO_hrly_ts$season = ifelse(LJWB_HOBO_hrly_ts$mo %in% c(11,12,1,2,3) , "Winter", "Summer")
+
+#export as csv
+write.csv(LJWB_HOBO_hrly_ts, "C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/processed data/JaramilloLower_temp.csv")
+
 # plot 
 ggplot(data=LJWB_HOBO_hrly_ts, aes(x=day, y=temp_C))+
   geom_point() + geom_path()+
@@ -260,23 +268,10 @@ ggplot(data=LJWB_HOBO_hrly_ts, aes(x=datetime_NM, y=temp_C))+
   theme(legend.title = element_blank()) +
   theme_bw()
 ​
-# across years, colored by seaspm:
-# add month
-LJWB_HOBO_hrly_ts$mo = lubridate::month(LJWB_HOBO_hrly_ts$datetime_NM)
-# add season (i'm estimating on season here - could be more accutate using dates)
-LJWB_HOBO_hrly_ts$season = ifelse(LJWB_HOBO_hrly_ts$mo %in% c(11,12,1,2,3) , "Winter", "Summer")
+# across years, colored by season:
 # plot
 ggplot(data=LJWB_HOBO_hrly_ts, aes(x=datetime_NM, y=temp_C, color=season))+
   geom_point() + 
   theme(legend.title = element_blank()) +
   theme_bw()
-​
-​
-#### next steps ####
-​
-# add 2020 and any other newer data to the site folder and modify the script to incorporate it into the LJWB_HOBO_hrly_ts dataframe 
-# save LJWB_HOBO_hrly_ts to a processed_data folder using write.csv
-# average data by week, month, and year. save each of these using write.csv
-# do this for the rest of the sites.
-# decide if/how the data needs cleaning. Right now I'm not sure that the negative values are innacruate, since they occur mostly in winter. However, I remember David talkign about them going wonky when they get encased in ice. So, plot this up and discuss with him. 
-# I have already processed the sonde data, so I can send that to you shortly.
+
