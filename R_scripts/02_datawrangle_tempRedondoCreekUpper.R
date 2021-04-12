@@ -31,9 +31,9 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
 # col 4 = battery
 # col 5-8 = HOBO notes
 # 
-# View(LJWB_HOBO_list[[1]]) 
-# View(LJWB_HOBO_list[[2]])  
-# View(LJWB_HOBO_list[[3]]) 
+# View(LJWB_HOBO_list[[1]])
+# View(LJWB_HOBO_list[[2]])
+# View(LJWB_HOBO_list[[3]])
 # View(LJWB_HOBO_list[[4]])
 # View(LJWB_HOBO_list[[5]])
 # View(LJWB_HOBO_list[[6]])
@@ -55,7 +55,7 @@ LJWB_HOBO_list = lapply(LJWB_file_list,
 # View(LJWB_HOBO_list[[22]])
 # View(LJWB_HOBO_list[[23]])
 # View(LJWB_HOBO_list[[24]]) #need to correct date from 1/16/1937 to 7/31/12
-# View(LJWB_HOBO_list[[25]]) 
+# View(LJWB_HOBO_list[[25]])
 # View(LJWB_HOBO_list[[26]])
 # View(LJWB_HOBO_list[[27]])
 # View(LJWB_HOBO_list[[28]])
@@ -235,6 +235,85 @@ LJWB_HOBO_hrly_ts$mo = lubridate::month(LJWB_HOBO_hrly_ts$datetime_NM)
 # add season (i'm estimating on season here - could be more accutate using dates)
 LJWB_HOBO_hrly_ts$season = ifelse(LJWB_HOBO_hrly_ts$mo %in% c(11,12,1,2,3) , "Winter", "Summer")
 
+# zoom in on dates to see where transducer may have been frozen:
+ggplot(data=LJWB_HOBO_hrly_ts, aes(x=datetime_NM, y =temp_C))+
+  geom_point() + geom_path()+
+  theme(legend.title = element_blank()) +
+  theme_bw() +
+  scale_x_datetime(limits=c(as.POSIXct('2017-11-02 00:00:00', tz="America/Denver"), as.POSIXct('2018-01-26 00:00:00', tz="America/Denver")), date_breaks="14 days") +
+  scale_y_continuous(limits=c(0,30))
+
+#need to delete winter data where logger wasn't stopped but appears to be removed from water
+LJWB_HOBO_hrly_ts$date <- as.Date(LJWB_HOBO_hrly_ts$datetime_NM)
+LJWB_HOBO_hrly_ts_1st <- filter(LJWB_HOBO_hrly_ts, date < as.Date("2013-11-12"))
+LJWB_HOBO_hrly_ts_2nd <- filter(LJWB_HOBO_hrly_ts, date>as.Date("2014-04-09"))
+LJWB_HOBO_hrly_ts<-rbind(LJWB_HOBO_hrly_ts_1st, LJWB_HOBO_hrly_ts_2nd)
+LJWB_HOBO_hrly_ts_3rd <- filter(LJWB_HOBO_hrly_ts, date < as.Date("2017-11-02"))
+LJWB_HOBO_hrly_ts_4th <- filter(LJWB_HOBO_hrly_ts, date>as.Date("2018-01-26"))
+LJWB_HOBO_hrly_ts<-rbind(LJWB_HOBO_hrly_ts_3rd, LJWB_HOBO_hrly_ts_4th)
+
+
+
+tmp <- rle(LJWB_HOBO_hrly_ts$temp_C)
+reps <- rep(tmp$lengths > 10,times = tmp$lengths)
+LJWB_HOBO_hrly_ts = cbind(LJWB_HOBO_hrly_ts,reps)
+
+freeze_times = data.frame(date_timeNM = LJWB_HOBO_hrly_ts$datetime_NM[LJWB_HOBO_hrly_ts$reps==TRUE])
+freeze_times$winter = ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2008-10-01") &
+                               as.Date(freeze_times$date_timeNM)<as.Date("2009-05-01"),
+                             "winter_0",
+                             ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2009-10-01") &
+                                      as.Date(freeze_times$date_timeNM)<as.Date("2010-05-01"),
+                                    "winter_1",
+                                    ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2010-10-01") &
+                                             as.Date(freeze_times$date_timeNM)<as.Date("2011-05-01"),
+                                           "winter_2",
+                                           ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2011-10-01") &
+                                                    as.Date(freeze_times$date_timeNM)<as.Date("2012-05-01"),
+                                                  "winter_3",
+                                                  ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2012-10-01") &
+                                                           as.Date(freeze_times$date_timeNM)<as.Date("2013-05-01"),
+                                                         "winter_4",
+                                                         ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2013-10-01") &
+                                                                  as.Date(freeze_times$date_timeNM)<as.Date("2014-05-01"),
+                                                                "winter_5",
+                                                                ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2014-10-01") &
+                                                                         as.Date(freeze_times$date_timeNM)<as.Date("2015-05-01"),
+                                                                       "winter_6", 
+                                                                       ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2015-10-01") &
+                                                                                as.Date(freeze_times$date_timeNM)<as.Date("2016-05-01"),
+                                                                              "winter_7",
+                                                                              ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2016-10-01") &
+                                                                                       as.Date(freeze_times$date_timeNM)<as.Date("2017-05-01"),
+                                                                                     "winter_8",
+                                                                                     ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2017-10-01") &
+                                                                                              as.Date(freeze_times$date_timeNM)<as.Date("2018-05-01"),
+                                                                                            "winter_9",
+                                                                                            ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2018-10-01") &
+                                                                                                     as.Date(freeze_times$date_timeNM)<as.Date("2019-05-01"),
+                                                                                                   "winter_10", 
+                                                                                                   ifelse(as.Date(freeze_times$date_timeNM)>as.Date("2019-10-01") &
+                                                                                                            as.Date(freeze_times$date_timeNM)<as.Date("2020-05-01"),
+                                                                                                           "winter_11",NA))))))))))))
+freeze_times <- filter(freeze_times, winter!="NA")       
+freeze_times =
+  freeze_times %>%
+  group_by(winter) %>%
+  summarise(min = min(date_timeNM), max=max(date_timeNM))
+
+LJWB_HOBO_hrly_ts$temp_C_c =LJWB_HOBO_hrly_ts$temp_C
+winterz = unique(freeze_times$winter)
+for (i in winterz) {
+  min_frz = freeze_times$min[freeze_times$winter==i]
+  max_frz = freeze_times$max[freeze_times$winter==i]
+  LJWB_HOBO_hrly_ts$temp_C_c[LJWB_HOBO_hrly_ts$datetime_NM>=min_frz &
+                               LJWB_HOBO_hrly_ts$datetime_NM<=max_frz] = NA
+}
+
+par(mfrow=c(2,1))
+plot(LJWB_HOBO_hrly_ts$temp_C ~ LJWB_HOBO_hrly_ts$datetime_NM)
+plot(LJWB_HOBO_hrly_ts$temp_C_c ~ LJWB_HOBO_hrly_ts$datetime_NM)
+
 #export as csv
 write.csv(LJWB_HOBO_hrly_ts, "C:/Users/Brionna/OneDrive - University of New Mexico/Classes/EPS545_BIO502/VCNP/VCNP_Repo/processed data/RedondoCreekUpper_temp.csv")
 
@@ -251,10 +330,10 @@ ggplot(data=LJWB_HOBO_hrly_ts, aes(x=datetime_NM, y=temp_C))+
   theme(legend.title = element_blank()) +
   theme_bw()
 
-# across years, colored by seaspm:
+# across years, colored by season:
 
 # plot
-ggplot(data=LJWB_HOBO_hrly_ts, aes(x=datetime_NM, y=temp_C, color=season))+
+ggplot(data=LJWB_HOBO_hrly_ts, aes(x=datetime_NM, y=temp_C_c, color=season))+
   geom_point() + 
   theme(legend.title = element_blank()) +
   theme_bw()
